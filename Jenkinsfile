@@ -8,29 +8,31 @@ pipeline{
             }
         }
 
-        stage('Build Docker Image'){
+        stage('Build'){
+            steps{
+                sh 'javac sample.java'
+            }
+        }
+
+        stage('Run'){
+            steps{
+                sh 'java sample'
+            }
+        }
+
+        stage('Dockerize'){
             steps{
                 sh 'docker build -t java-calculator-app .'
             }
-        }
-
-        stage('Run Docker Container'){
-            steps{
-                sh 'docker run -d -p 8080:8080 --name calculator-app java-calculator-app'
-            }
-        }
-
-        stage('Post-build Cleanup'){
-            steps{
-                sh 'docker system prune -f'
-            }
-        }
+        }   
     }
 
     post{
-        always{
-            echo 'Cleaning up workspace...'
-            deleteDir()
+        success {
+            echo 'Job completed successfully!'
+        }
+        failure {
+            echo 'Job failed!'
         }
     }
 }
